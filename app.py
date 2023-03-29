@@ -57,9 +57,9 @@ def login():
                                    "0:Aligned-Single",
                                    single_aligned_path,
                                    "--language",
-                                   "0:eng",
+                                   "1:eng",
                                    "--track-name",
-                                   "1:Aligned-Dual",
+                                   "0:Aligned-Dual",
                                    dual_aligned_path
                                    ]):
                     shutil.move(temp_path, media_path)
