@@ -6,10 +6,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Los_Angeles
 ENV RELEASE_VERSION=0.3.0
 
-COPY ./subaligner-trained/ /subaligner
-
-RUN cd /subaligner
-
 RUN ["/bin/bash", "-c", "apt-get -y update &&\
     apt-get -y install ffmpeg &&\
     apt-get -y install espeak libespeak1 libespeak-dev espeak-data &&\
@@ -17,8 +13,11 @@ RUN ["/bin/bash", "-c", "apt-get -y update &&\
     apt-get -y install python3-dev &&\
     apt-get -y install python3-tk &&\
     apt-get -y install python3-pip &&\
-    python3 -m pip install --upgrade pip &&\
-    python3 -m pip install -e . "]
+    python3 -m pip install --upgrade pip"]
+
+COPY ./subaligner-trained/ /subaligner
+
+RUN cd /subaligner && python3 -m pip install -e.
 
 RUN python3 -m pip install flask gunicorn
 
