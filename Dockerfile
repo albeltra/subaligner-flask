@@ -25,6 +25,8 @@ RUN python3 -m pip install flask gunicorn
 
 COPY app.py /scripts/
 
+RUN apt-get install -y wget
+
 RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg
 
 RUN apt update
