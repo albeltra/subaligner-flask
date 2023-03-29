@@ -4,6 +4,7 @@ FROM ubuntu:20.04
 ENV RELEASE_VERSION=${RELEASE_VERSION}
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Los_Angeles
+ENV RELEASE_VERSION=0.3.0
 
 COPY /subaligner-trained/ /subaligner
 
