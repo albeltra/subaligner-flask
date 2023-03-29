@@ -18,7 +18,7 @@ RUN ["/bin/bash", "-c", "apt-get -y update &&\
     apt-get -y install python3-tk &&\
     apt-get -y install python3-pip &&\
     python3 -m pip install --upgrade pip &&\
-    python3 -m pip install -e .
+    python3 -m pip install -e . "]
 
 RUN python3 -m pip install flask gunicorn
 
