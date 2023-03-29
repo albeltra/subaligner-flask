@@ -18,10 +18,10 @@ def login():
         media_posix = Path(media)
 
         temp_path = media_posix.parents[0] / Path('temp' + media_posix.suffix)
-        media_path = f"'{media}'"
-        subtitle_path = f"'{subtitle}'"
-        single_aligned_path = f"""'{subtitle + ".aligned"}'"""
-        dual_aligned_path = f"""'{subtitle + ".aligned_dual"}'"""
+        media_path = f"{media}"
+        subtitle_path = f"{subtitle}"
+        single_aligned_path = f"""{subtitle + ".aligned"}"""
+        dual_aligned_path = f"""{subtitle + ".aligned_dual"}"""  
 
         if subprocess.run(["subaligner",
                            "-m",
