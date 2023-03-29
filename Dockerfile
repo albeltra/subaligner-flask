@@ -23,8 +23,6 @@ RUN ["/bin/bash", "-c", "apt-get -y update &&\
 
 RUN python3 -m pip install flask gunicorn
 
-COPY app.py /scripts/
-
 RUN apt-get install -y wget
 
 RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg
@@ -32,5 +30,7 @@ RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.down
 RUN apt update
 
 RUN apt install -y mkvtoolnix
+
+COPY app.py /scripts/
 
 ENTRYPOINT ["gunicorn", "-b", "0.0.0.0",  "--chdir", "/scripts", "app:app"]
