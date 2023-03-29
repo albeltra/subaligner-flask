@@ -15,12 +15,6 @@ RUN ["/bin/bash", "-c", "apt-get -y update &&\
     apt-get -y install python3-pip &&\
     python3 -m pip install --upgrade pip"]
 
-COPY ./subaligner-trained/ /subaligner
-
-RUN python3 -m pip install flask gunicorn
-
-RUN cd /subaligner && python3 -m pip install -e.
-
 RUN apt-get install -y wget
 
 RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg
@@ -28,6 +22,10 @@ RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.down
 RUN apt update
 
 RUN apt install -y mkvtoolnix
+
+COPY ./subaligner-trained/ /subaligner
+
+RUN cd /subaligner && python3 -m pip install -e.
 
 COPY app.py /scripts/ 
 
