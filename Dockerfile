@@ -17,9 +17,9 @@ RUN ["/bin/bash", "-c", "apt-get -y update &&\
 
 COPY ./subaligner-trained/ /subaligner
 
-RUN cd /subaligner && python3 -m pip install -e.
-
 RUN python3 -m pip install flask gunicorn
+
+RUN cd /subaligner && python3 -m pip install -e.
 
 RUN apt-get install -y wget
 
