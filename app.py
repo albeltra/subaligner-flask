@@ -5,9 +5,16 @@ import json
 import subprocess
 from pathlib import Path
 import shutil
+from plexapi.server import PlexServer
 
 app = Flask(__name__)
 
+baseurl = os.environ.get('PLEX_URL')
+token = os.environ.get('PLEX_TOKEN')
+if baseurl is not None and token is not None:
+    plex = PlexServer(baseurl, token,)
+else:
+    plex = None
 
 @app.route('/align', methods=['POST'])
 def login():
@@ -26,6 +33,21 @@ def login():
         temp_subtitle_path = subtitle_path.replace(".en.srt", ".srt")
 
         shutil.copy(subtitle_path, temp_subtitle_path)
+        data = subprocess.run(['ffprobe', '-loglevel', 'error', '-show_streams', '-of', 'json', media_path], capture_output=True).stdout
+        d = json.loads(data)['streams']
+        inds = [i for i, x in enumerate(d) if x['codec_type'] == 'audio']
+        langs = [None] * len(inds)
+        channel = '0'
+        if len(inds) > 1:
+            for ind in inds:
+                tags = d[ind].get('tags')
+                if tags is not None:
+                    lang = tags.get('language')
+                    if lang is not None:
+                        langs[ind] = lang
+            for ind, lang in enumerate(langs): 
+                if lang == 'eng':
+                    channel = str(ind)
 
         if subprocess.run(["subaligner",
                            "-m",
@@ -34,6 +56,8 @@ def login():
                            media_path,
                            "-s",
                            temp_subtitle_path,
+                           "-c",
+                           channel,
                            "-o",
                            single_aligned_path]):
 
@@ -44,6 +68,8 @@ def login():
                                media_path,
                                "-s",
                                temp_subtitle_path,
+                               "-c",
+                               channel,
                                "-o",
                                dual_aligned_path]):
 
