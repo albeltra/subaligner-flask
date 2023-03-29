@@ -57,7 +57,7 @@ def login():
                                    "0:Aligned-Single",
                                    single_aligned_path,
                                    "--language",
-                                   "0:eng", 
+                                   "0:eng",
                                    "--track-name",
                                    "0:Aligned-Dual",
                                    dual_aligned_path
