@@ -21,7 +21,11 @@ def login():
         media_path = f"{media}"
         subtitle_path = f"{subtitle}"
         single_aligned_path = f"""{subtitle + ".aligned"}"""
-        dual_aligned_path = f"""{subtitle + ".aligned_dual"}"""  
+        dual_aligned_path = f"""{subtitle + ".aligned_dual"}"""
+
+        temp_subtitle_path = subtitle_path.replace(".en.srt", ".srt")
+
+        shutil.copy(subtitle_path, temp_subtitle_path)
 
         if subprocess.run(["subaligner",
                            "-m",
@@ -29,7 +33,7 @@ def login():
                            "-v",
                            media_path,
                            "-s",
-                           subtitle_path,
+                           temp_subtitle_path,
                            "-o",
                            single_aligned_path]):
 
@@ -39,7 +43,7 @@ def login():
                                "-v",
                                media_path,
                                "-s",
-                               subtitle_path,
+                               temp_subtitle_path,
                                "-o",
                                dual_aligned_path]):
 
@@ -62,5 +66,6 @@ def login():
                     # shutil.move(temp_path, media_path)
                     # os.remove(single_aligned_path)
                     # os.remove(dual_aligned_path)
+                    # os.remove(temp_subtitle_path) 
 
         return 'Success', 200
