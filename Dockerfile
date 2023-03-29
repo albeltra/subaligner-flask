@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Los_Angeles
 ENV RELEASE_VERSION=0.3.0
 
-COPY /subaligner-trained/ /subaligner
+COPY ./subaligner-trained/ /subaligner
 
 RUN cd /subaligner
 
@@ -18,8 +18,7 @@ RUN ["/bin/bash", "-c", "apt-get -y update &&\
     apt-get -y install python3-tk &&\
     apt-get -y install python3-pip &&\
     python3 -m pip install --upgrade pip &&\
-    python3 -m pip install \"subaligner==${RELEASE_VERSION}\" &&\
-    python3 -m pip install \"subaligner[harmony]==${RELEASE_VERSION}\""]
+    python3 -m pip install -e .
 
 RUN python3 -m pip install flask gunicorn
 
