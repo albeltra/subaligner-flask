@@ -20,3 +20,9 @@ RUN ["/bin/bash", "-c", "apt-get -y update &&\
     python3 -m pip install --upgrade pip &&\
     python3 -m pip install \"subaligner==${RELEASE_VERSION}\" &&\
     python3 -m pip install \"subaligner[harmony]==${RELEASE_VERSION}\""]
+
+RUN python3 -m pip install flask gunicorn
+
+COPY app.py /scripts/
+
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0",  "--chdir", "/scripts", "app:app"]
