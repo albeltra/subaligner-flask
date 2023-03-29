@@ -1,4 +1,7 @@
-from flask import Flask
+from flask import Flask, request
+import requests
+import json
+import subprocess
 
 app = Flask(__name__)
 
@@ -6,4 +9,8 @@ app = Flask(__name__)
 def login():
     if request.method == 'POST':
         data = json.loads(request.data)
-        print(data)
+        media = data.get('media')
+        subtitle = data.get('subtitle')
+
+        
+        
