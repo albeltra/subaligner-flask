@@ -19,7 +19,7 @@ def login():
 
         temp_path = media_posix.parents[0] / Path('temp' + media_posix.suffix)
         media_path = f"{media}"
-        subtitle_path = f"{subtitle}" 
+        subtitle_path = f"{subtitle}"
         single_aligned_path = f"""{subtitle.replace(".en.srt", ".en.aligned.srt")}"""
         dual_aligned_path = f"""{subtitle.replace(".en.srt", ".en.aligned_dual.srt")}"""
 
@@ -57,15 +57,14 @@ def login():
                                    "0:Aligned-Single",
                                    single_aligned_path,
                                    "--language",
-                                   "1:eng",
+                                   "0:eng",
                                    "--track-name",
                                    "1:Aligned-Dual",
                                    dual_aligned_path
                                    ]):
-                    print('here')
-                    # shutil.move(temp_path, media_path)
-                    # os.remove(single_aligned_path)
-                    # os.remove(dual_aligned_path)
-                    # os.remove(temp_subtitle_path)
+                    shutil.move(temp_path, media_path)
+                    os.remove(single_aligned_path)
+                    os.remove(dual_aligned_path)
+                    os.remove(temp_subtitle_path)
 
         return 'Success', 200
