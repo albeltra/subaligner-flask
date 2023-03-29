@@ -31,6 +31,6 @@ RUN apt update
 
 RUN apt install -y mkvtoolnix
 
-COPY app.py /scripts/
+COPY app.py /scripts/ 
 
 ENTRYPOINT ["gunicorn", "-b", "0.0.0.0", "--timeout", "600",  "--chdir", "/scripts", "app:app"]
