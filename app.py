@@ -1,20 +1,12 @@
-import os
-
-from flask import Flask, request
 import json
+import os
+import shutil
 import subprocess
 from pathlib import Path
-import shutil
-from plexapi.server import PlexServer
+
+from flask import Flask, request
 
 app = Flask(__name__)
-
-baseurl = os.environ.get('PLEX_URL')
-token = os.environ.get('PLEX_TOKEN')
-if baseurl is not None and token is not None:
-    plex = PlexServer(baseurl, token,)
-else:
-    plex = None
 
 @app.route('/align', methods=['POST'])
 def login():
@@ -45,7 +37,7 @@ def login():
                     lang = tags.get('language')
                     if lang is not None:
                         langs[ind] = lang
-            for ind, lang in enumerate(langs): 
+            for ind, lang in enumerate(langs):
                 if lang == 'eng':
                     channel = str(ind)
 
