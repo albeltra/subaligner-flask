@@ -21,6 +21,9 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -
     chmod +x Miniconda3-latest-Linux-x86_64.sh &&\
     bash Miniconda3-latest-Linux-x86_64.sh -b
 
+ENV PATH="/root/miniconda3/bin:${PATH}"
+ARG PATH="/root/miniconda3/bin:${PATH}"
+
 RUN conda install -c conda-forge gxx
 
 RUN wget -O /usr/share/keyrings/gpg-pub-moritzbunkus.gpg https://mkvtoolnix.download/gpg-pub-moritzbunkus.gpg
