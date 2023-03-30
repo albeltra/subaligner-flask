@@ -1,5 +1,5 @@
 # Subaligner Ubuntu 20 Docker Image
-FROM ubuntu:20.04 
+FROM ubuntu:22.04 
 
 ENV RELEASE_VERSION=${RELEASE_VERSION}
 ENV DEBIAN_FRONTEND=noninteractive
