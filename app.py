@@ -68,8 +68,6 @@ def login():
                 if subprocess.run(["mkvmerge",
                                    "-o",
                                    temp_path,
-                                   "-a",
-                                   "-d",
                                    "-s",
                                    "!",
                                    media_path,
