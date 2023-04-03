@@ -32,7 +32,7 @@ COPY ./subaligner-trained/ /subaligner
 
 RUN cd /subaligner && python3 -m pip install -e.
 
-RUN python3 -m pip install -U flask gunicorn pycountry pystack-debugger markupsafe
+RUN python3 -m pip install flask gunicorn pycountry pystack-debugger markupsafe==2.0.1
 
 COPY app.py /scripts/ 
 
