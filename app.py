@@ -8,6 +8,7 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
+
 @app.route('/align', methods=['POST'])
 def login():
     if request.method == 'POST':
@@ -25,7 +26,8 @@ def login():
         temp_subtitle_path = subtitle_path.replace(".en.srt", ".srt")
 
         shutil.copy(subtitle_path, temp_subtitle_path)
-        data = subprocess.run(['ffprobe', '-loglevel', 'error', '-show_streams', '-of', 'json', media_path], capture_output=True).stdout
+        data = subprocess.run(['ffprobe', '-loglevel', 'error', '-show_streams', '-of', 'json', media_path],
+                              capture_output=True).stdout
         d = json.loads(data)['streams']
         inds = [i for i, x in enumerate(d) if x['codec_type'] == 'audio']
         sub_inds = ",".join([str(i) for i, x in enumerate(d) if x['codec_type'] == 'subtitle'])
@@ -66,26 +68,43 @@ def login():
                                "-o",
                                dual_aligned_path]):
 
-                if subprocess.run(["mkvmerge",
-                                   "-o",
-                                   temp_path,
-                                   "-s",
-                                   "!" + sub_inds,
-                                   media_path,
-                                   "--language",
-                                   "0:eng",
-                                   "--track-name",
-                                   "0:Aligned-Single",
-                                   single_aligned_path,
-                                   "--language",
-                                   "0:eng",
-                                   "--track-name",
-                                   "0:Aligned-Dual",
-                                   dual_aligned_path
-                                   ]):
-                    shutil.move(temp_path, media_path)
-                    os.remove(single_aligned_path)
-                    os.remove(dual_aligned_path)
-                    os.remove(temp_subtitle_path)
+                if len(sub_inds) > 0:
+                    subprocess.run(["mkvmerge",
+                                    "-o",
+                                    temp_path,
+                                    "-s",
+                                    "!" + sub_inds,
+                                    media_path,
+                                    "--language",
+                                    "0:eng",
+                                    "--track-name",
+                                    "0:Aligned-Single",
+                                    single_aligned_path,
+                                    "--language",
+                                    "0:eng",
+                                    "--track-name",
+                                    "0:Aligned-Dual",
+                                    dual_aligned_path
+                                    ])
+                else: 
+                    subprocess.run(["mkvmerge",
+                                    "-o",
+                                    temp_path,
+                                    media_path,
+                                    "--language",
+                                    "0:eng",
+                                    "--track-name",
+                                    "0:Aligned-Single",
+                                    single_aligned_path,
+                                    "--language",
+                                    "0:eng",
+                                    "--track-name",
+                                    "0:Aligned-Dual",
+                                    dual_aligned_path
+                                    ])
+                shutil.move(temp_path, media_path)
+                os.remove(single_aligned_path)
+                os.remove(dual_aligned_path)
+                os.remove(temp_subtitle_path)
 
         return 'Success', 200
