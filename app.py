@@ -28,6 +28,7 @@ def login():
         data = subprocess.run(['ffprobe', '-loglevel', 'error', '-show_streams', '-of', 'json', media_path], capture_output=True).stdout
         d = json.loads(data)['streams']
         inds = [i for i, x in enumerate(d) if x['codec_type'] == 'audio']
+        sub_inds = ",".join([str(i) for i, x in enumerate(d) if x['codec_type'] == 'subtitle'])
         langs = [None] * len(inds)
         channel = '0'
         if len(inds) > 1:
@@ -69,7 +70,7 @@ def login():
                                    "-o",
                                    temp_path,
                                    "-s",
-                                   "!",
+                                   "!" + sub_inds,
                                    media_path,
                                    "--language",
                                    "0:eng",
