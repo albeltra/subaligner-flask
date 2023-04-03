@@ -32,6 +32,8 @@ COPY ./subaligner-trained/ /subaligner
 
 RUN cd /subaligner && python3 -m pip install -e.
 
+RUN python3 -m pip install flask gunicorn pycountry
+
 COPY app.py /scripts/ 
 
 ENTRYPOINT ["gunicorn", "-b", "0.0.0.0", "--timeout", "600",  "--chdir", "/scripts", "app:app"]
