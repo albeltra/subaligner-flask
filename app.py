@@ -16,7 +16,7 @@ if os.environ.get('REDIS_HOST') and os.environ.get('REDIS_PORT'):
 
     redis_host = os.environ.get('REDIS_HOST')
     redis_port = os.environ.get('REDIS_PORT')
-    q = Queue(connection=Redis(host=redis_host, port=redis_port), default_timeout=timeout)
+    q = Queue('subtitles', connection=Redis(host=redis_host, port=redis_port), default_timeout=timeout)
 else:
     q = None
 
