@@ -27,30 +27,35 @@ else:
 def login():
     if request.method == 'POST':
         data = json.loads(request.data)
-        media = data.get('media')
-        subtitle = data.get('subtitle')
-        media_posix = Path(media)
+        media_path = data.get('media')
+        subtitle_path = data.get('subtitle')
+        lang = data.get('language')
 
-        temp_media_path = media_posix.parents[0] / Path('temp' + media_posix.suffix)
-        media_path = f"{media}"
-        if media_path.endswith('.mp4') or media_path.endswith('.mkv'):
-            subtitle_path = f"{subtitle}"
-            lang = "." + subtitle_path.split(".")[-2]
-            single_aligned_path = f"""{subtitle.replace(lang + ".srt", lang + ".aligned.srt")}"""
-            dual_aligned_path = f"""{subtitle.replace(lang + ".srt", lang + ".aligned_dual.srt")}"""
+        if (media_path.endswith('.mp4') or media_path.endswith('.mkv')) \
+                and subtitle_path is not None \
+                and media_path is not None:
+            media_posix = Path(media_path)
+            subtitle_posix = Path(subtitle_path)
+            temp_media_path = media_posix.parents[0] / Path('temp' + media_posix.suffix)
+            temp_subtitle_path = subtitle_posix.parents[0] / Path('temp' + subtitle_posix.suffix)
 
-            temp_subtitle_path = subtitle_path.replace(lang + ".srt", ".srt")
+            lang = "." + lang.split(".")[0] if lang is not None else "." + "en"
+            sub_format = str(subtitle_posix.suffix)
+
+            single_aligned_path = f"""{subtitle_path.replace(lang + sub_format, lang + ".aligned" + sub_format)}"""
+            dual_aligned_path = f"""{subtitle_path.replace(lang + sub_format, lang + ".aligned_dual" + sub_format)}"""
 
             shutil.copy(subtitle_path, temp_subtitle_path)
             data = subprocess.run(['ffprobe', '-loglevel', 'error', '-show_streams', '-of', 'json', media_path],
                                   capture_output=True).stdout
             d = json.loads(data)['streams']
-            inds = [i for i, x in enumerate(d) if x['codec_type'] == 'audio']
+            audio_inds = [i for i, x in enumerate(d) if x['codec_type'] == 'audio']
             sub_inds = ",".join([str(i) for i, x in enumerate(d) if x['codec_type'] == 'subtitle'])
-            langs = [None] * len(inds)
+
+            langs = [None] * len(audio_inds)
             channel = '0'
-            if len(inds) > 1:
-                for ind in inds:
+            if len(audio_inds) > 1:
+                for ind in audio_inds:
                     tags = d[ind].get('tags')
                     if tags is not None:
                         lang = tags.get('language')
@@ -126,7 +131,7 @@ def login():
                                          "single_path": single_aligned_path,
                                          "dual_path": dual_aligned_path},
                                  depends_on=job2)
-                
+
                 q.enqueue(cleanup_files,
                           kwargs={"temp_media_path": temp_media_path,
                                   "media_path": media_path,
