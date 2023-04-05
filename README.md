@@ -14,7 +14,13 @@ My primary goals were:
 
 
 ### Running the Container
-You can build the image yourself, or run mine like below:
+You can build the image yourself: <br>
+```
+git clone https://github.com/albeltra/subaligner-standalone --recrusive
+cd subaligner-standalone
+docker build -t subaligner-standalone .
+```
+Then run it using your freshly built image or mine:
 
 ```
 docker run \
