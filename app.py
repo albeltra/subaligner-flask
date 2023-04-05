@@ -40,6 +40,7 @@ def login():
             dual_aligned_path = f"""{subtitle.replace(".en.srt", ".en.aligned_dual.srt")}"""
 
             temp_subtitle_path = subtitle_path.replace(".en.srt", ".srt")
+            print(subtitle_path, temp_subtitle_path)
 
             shutil.copy(subtitle_path, temp_subtitle_path)
             data = subprocess.run(['ffprobe', '-loglevel', 'error', '-show_streams', '-of', 'json', media_path],
