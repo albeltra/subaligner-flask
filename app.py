@@ -6,6 +6,8 @@ from pathlib import Path
 
 from flask import Flask, request
 
+from utils import subprocess_call, sub_call
+
 app = Flask(__name__)
 
 timeout = os.environ.get('TIMEOUT', 1000)
@@ -21,23 +23,6 @@ else:
     q = None
 
 
-def subprocess_call(command):
-    import subprocess
-    subprocess.run(command, check=True)
-    # result = subprocess.run(command, stdout=subprocess.PIPE)
-    # output = result.stdout.decode('utf-8')
-    # return output
-
-
-def sub_call(command, single_path, dual_path):
-    drop_index = []
-    if not os.path.exists(single_path):
-        drop_index += [-6, -7, -8, -9, -10]
-    if not os.path.exists(dual_path):
-        drop_index += [-1, -2, -3, -4, -5]
-    for ind in drop_index:
-        del command[ind]
-    subprocess_call(command)
 
 @app.route('/align', methods=['POST'])
 def login():
