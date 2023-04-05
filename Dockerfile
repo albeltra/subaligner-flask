@@ -36,4 +36,6 @@ RUN python3 -m pip install flask==1.1.4 gunicorn==20.1.0 pycountry pystack-debug
 
 COPY app.py /scripts/ 
 
+COPY utils.py /scripts/
+
 ENTRYPOINT ["gunicorn", "-b", "0.0.0.0", "--timeout", "600",  "--chdir", "/scripts", "app:app"]
