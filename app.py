@@ -147,14 +147,13 @@ def login():
             if q:
                 # Chain alignment jobs together
                 job1 = q.enqueue(subprocess_call, kwargs={"command": single})
-                job2 = q.enqueue(subprocess_call, kwargs={"command": dual}, depends_on=job1, at_front=True)
+                job2 = q.enqueue(subprocess_call, kwargs={"command": dual}, depends_on=job1)
                 # Embed successfully aligned subtitles
                 job3 = q.enqueue(sub_call,
                                  kwargs={"command": sub,
                                          "single_path": single_aligned_path,
                                          "dual_path": dual_aligned_path},
-                                 depends_on=job2,
-                                 at_front=True)
+                                 depends_on=job2)
 
                 # Cleanup all temporary files
                 q.enqueue(cleanup_files,
@@ -163,8 +162,7 @@ def login():
                                   "single_aligned_path": single_aligned_path,
                                   "dual_aligned_path": dual_aligned_path,
                                   "temp_subtitle_path": temp_subtitle_path},
-                          depends_on=job3,
-                          at_front=True)
+                          depends_on=job3)
             else:
                 # Keep a list of subtitle embed arguments to remove
                 drop_index = []
