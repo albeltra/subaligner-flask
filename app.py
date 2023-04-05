@@ -29,7 +29,6 @@ def login():
         data = json.loads(request.data)
         media_path = data.get('media')
         subtitle_path = data.get('subtitle')
-        lang = data.get('language')
 
         if (media_path.endswith('.mp4') or media_path.endswith('.mkv')) \
                 and subtitle_path is not None \
@@ -39,11 +38,10 @@ def login():
             temp_media_path = media_posix.parents[0] / Path('temp' + media_posix.suffix)
             temp_subtitle_path = subtitle_posix.parents[0] / Path('temp' + subtitle_posix.suffix)
 
-            lang = "." + lang.split(".")[0] if lang is not None else "." + "en"
             sub_format = str(subtitle_posix.suffix)
 
-            single_aligned_path = f"""{subtitle_path.replace(lang + sub_format, lang + ".aligned" + sub_format)}"""
-            dual_aligned_path = f"""{subtitle_path.replace(lang + sub_format, lang + ".aligned_dual" + sub_format)}"""
+            single_aligned_path = f"""{subtitle_path.replace(sub_format, ".aligned" + sub_format)}"""
+            dual_aligned_path = f"""{subtitle_path.replace(sub_format, ".aligned_dual" + sub_format)}"""
 
             shutil.copy(subtitle_path, temp_subtitle_path)
             data = subprocess.run(['ffprobe', '-loglevel', 'error', '-show_streams', '-of', 'json', media_path],
