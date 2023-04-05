@@ -36,11 +36,11 @@ def login():
         media_path = f"{media}"
         if media_path.endswith('.mp4') or media_path.endswith('.mkv'):
             subtitle_path = f"{subtitle}"
-            single_aligned_path = f"""{subtitle.replace(".en.srt", ".en.aligned.srt")}"""
-            dual_aligned_path = f"""{subtitle.replace(".en.srt", ".en.aligned_dual.srt")}"""
+            lang = "." + subtitle_path.split(".")[-2]
+            single_aligned_path = f"""{subtitle.replace(lang + ".srt", lang + ".aligned.srt")}"""
+            dual_aligned_path = f"""{subtitle.replace(lang + ".srt", lang + ".aligned_dual.srt")}"""
 
-            temp_subtitle_path = subtitle_path.replace(".en.srt", ".srt")
-            print(subtitle_path, temp_subtitle_path)
+            temp_subtitle_path = subtitle_path.replace(lang + ".srt", lang + ".srt" + ".temp")
 
             shutil.copy(subtitle_path, temp_subtitle_path)
             data = subprocess.run(['ffprobe', '-loglevel', 'error', '-show_streams', '-of', 'json', media_path],
