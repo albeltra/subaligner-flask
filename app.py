@@ -6,7 +6,7 @@ from pathlib import Path
 
 from flask import Flask, request
 
-from utils import subprocess_call, sub_call
+from utils import subprocess_call, sub_call, cleanup_files
 
 app = Flask(__name__)
 
@@ -23,7 +23,6 @@ else:
     q = None
 
 
-
 @app.route('/align', methods=['POST'])
 def login():
     if request.method == 'POST':
@@ -32,7 +31,7 @@ def login():
         subtitle = data.get('subtitle')
         media_posix = Path(media)
 
-        temp_path = media_posix.parents[0] / Path('temp' + media_posix.suffix)
+        temp_media_path = media_posix.parents[0] / Path('temp' + media_posix.suffix)
         media_path = f"{media}"
         if media_path.endswith('.mp4') or media_path.endswith('.mkv'):
             subtitle_path = f"{subtitle}"
@@ -88,7 +87,7 @@ def login():
             if len(sub_inds) > 0:
                 sub = ["mkvmerge",
                        "-o",
-                       temp_path,
+                       temp_media_path,
                        "-s",
                        "!" + sub_inds,
                        media_path,
@@ -106,7 +105,7 @@ def login():
             else:
                 sub = ["mkvmerge",
                        "-o",
-                       temp_path,
+                       temp_media_path,
                        media_path,
                        "--language",
                        "0:eng",
@@ -122,11 +121,18 @@ def login():
             if q:
                 job1 = q.enqueue(subprocess_call, kwargs={"command": single})
                 job2 = q.enqueue(subprocess_call, kwargs={"command": dual}, depends_on=job1)
-                q.enqueue(sub_call,
-                          kwargs={"command": sub,
-                                  "single_path": single_aligned_path,
-                                  "dual_path": dual_aligned_path},
-                          depends_on=job2)
+                job3 = q.enqueue(sub_call,
+                                 kwargs={"command": sub,
+                                         "single_path": single_aligned_path,
+                                         "dual_path": dual_aligned_path},
+                                 depends_on=job2)
+                q.enqueue(cleanup_files,
+                          kawrgs={"temp_media_path": temp_media_path,
+                                  "media_path": media_path,
+                                  "single_aligned_path": single_aligned_path,
+                                  "dual_aligned_path": dual_aligned_path,
+                                  "temp_subtitle_path": temp_subtitle_path},
+                          depends_on=job3)
             else:
                 drop_index = []
                 try:
@@ -137,24 +143,15 @@ def login():
                     subprocess_call(dual)
                 except subprocess.CalledProcessError:
                     drop_index += [-1, -2, -3, -4, -5]
+
                 for ind in drop_index:
                     del sub[ind]
-                subprocess_call(sub)
 
-            try:
-                shutil.move(temp_path, media_path)
-            except:
-                pass
-            try:
-                os.remove(single_aligned_path)
-            except:
-                pass
-            try:
-                os.remove(dual_aligned_path)
-            except:
-                pass
-            try:
-                os.remove(temp_subtitle_path)
-            except:
-                pass
+                try:
+                    subprocess_call(sub)
+                except subprocess.CalledProcessError:
+                    pass
+
+                cleanup_files(temp_media_path, media_path, single_aligned_path, dual_aligned_path, temp_subtitle_path)
+
             return 'Success', 200
