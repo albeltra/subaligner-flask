@@ -126,8 +126,9 @@ def login():
                                          "single_path": single_aligned_path,
                                          "dual_path": dual_aligned_path},
                                  depends_on=job2)
+                
                 q.enqueue(cleanup_files,
-                          kawrgs={"temp_media_path": temp_media_path,
+                          kwargs={"temp_media_path": temp_media_path,
                                   "media_path": media_path,
                                   "single_aligned_path": single_aligned_path,
                                   "dual_aligned_path": dual_aligned_path,
