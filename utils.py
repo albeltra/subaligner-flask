@@ -6,7 +6,6 @@ import subprocess
 def cleanup_files(temp_media_path: str,
                   media_path: str,
                   single_aligned_path: str,
-                  dual_aligned_path: str,
                   temp_subtitle_path: str) -> None:
     """
     This function attempts to delete all temporary filese creating during subtitle alignment
@@ -43,7 +42,7 @@ def subprocess_call(command: list) -> None:
     subprocess.run(command, check=True)
 
 
-def sub_call(command: list, single_path: str, dual_path: str) -> None:
+def sub_call(command: list, single_path: str) -> None:
     """
     This function determines which stages of subtitle alignment succeeded and embeds
     those that were successful into the original media file
@@ -53,8 +52,6 @@ def sub_call(command: list, single_path: str, dual_path: str) -> None:
     """
     drop_index = []
     if not os.path.exists(single_path):
-        drop_index += [-6, -7, -8, -9, -10]
-    if not os.path.exists(dual_path):
         drop_index += [-1, -2, -3, -4, -5]
     for ind in drop_index:
         del command[ind]

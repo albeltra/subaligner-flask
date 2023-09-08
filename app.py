@@ -52,7 +52,6 @@ def login():
             sub_format = str(subtitle_posix.suffix)
 
             single_aligned_path = f"""{subtitle_path.replace(sub_format, ".aligned" + sub_format)}"""
-            dual_aligned_path = f"""{subtitle_path.replace(sub_format, ".aligned_dual" + sub_format)}"""
 
             # Create temp subtitle file
             shutil.copy(subtitle_path, temp_subtitle_path)
@@ -95,19 +94,6 @@ def login():
                       "-o",
                       single_aligned_path]
 
-            # Define dual alignment command
-            dual = ["subaligner",
-                    "-m",
-                    "dual",
-                    "-v",
-                    media_path,
-                    "-s",
-                    temp_subtitle_path,
-                    "-c",
-                    channel,
-                    "-o",
-                    dual_aligned_path]
-
             # If existing subtitle tracks are detected, remove them
             if len(sub_inds) > 0:
                 sub = ["mkvmerge",
@@ -121,11 +107,6 @@ def login():
                        "--track-name",
                        "0:Aligned-Single",
                        single_aligned_path,
-                       "--language",
-                       "0:eng",
-                       "--track-name",
-                       "0:Aligned-Dual",
-                       dual_aligned_path
                        ]
             # Else only add the newly aligned subtitles
             else:
@@ -138,31 +119,24 @@ def login():
                        "--track-name",
                        "0:Aligned-Single",
                        single_aligned_path,
-                       "--language",
-                       "0:eng",
-                       "--track-name",
-                       "0:Aligned-Dual",
-                       dual_aligned_path
                        ]
             if q:
                 # Chain alignment jobs together
                 job1 = q.enqueue(subprocess_call, kwargs={"command": single})
-                job2 = q.enqueue(subprocess_call, kwargs={"command": dual}, depends_on=job1)
                 # Embed successfully aligned subtitles
-                job3 = q.enqueue(sub_call,
+                job2 = q.enqueue(sub_call,
                                  kwargs={"command": sub,
-                                         "single_path": single_aligned_path,
-                                         "dual_path": dual_aligned_path},
-                                 depends_on=job2)
+                                         "single_path": single_aligned_path
+                                         },
+                                 depends_on=job1)
 
                 # Cleanup all temporary files
                 q.enqueue(cleanup_files,
                           kwargs={"temp_media_path": temp_media_path,
                                   "media_path": media_path,
                                   "single_aligned_path": single_aligned_path,
-                                  "dual_aligned_path": dual_aligned_path,
                                   "temp_subtitle_path": temp_subtitle_path},
-                          depends_on=job3)
+                          depends_on=job2)
             else:
                 # Keep a list of subtitle embed arguments to remove
                 drop_index = []
@@ -170,12 +144,8 @@ def login():
                     subprocess_call(single)
                 except subprocess.CalledProcessError:
                     # If single stage alignment fails, remove corresponding args in function call
-                    drop_index += [-6, -7, -8, -9, -10]
-                try:
-                    subprocess_call(dual)
-                except subprocess.CalledProcessError:
-                    # If dual stage alignment fails, remove corresponding args in function call
                     drop_index += [-1, -2, -3, -4, -5]
+
                 # Delete bad args
                 for ind in drop_index:
                     del sub[ind]
@@ -186,6 +156,6 @@ def login():
                 except subprocess.CalledProcessError:
                     pass
                 # Cleanup al temporary files
-                cleanup_files(temp_media_path, media_path, single_aligned_path, dual_aligned_path, temp_subtitle_path)
+                cleanup_files(temp_media_path, media_path, single_aligned_path, temp_subtitle_path)
 
             return 'Success', 200
